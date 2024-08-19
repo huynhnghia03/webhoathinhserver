@@ -26,9 +26,10 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   })
-  app.use('/upload', express.static(join(process.cwd(), 'upload')));
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+  app.use('/upload', express.static(join(process.cwd(), 'upload')));
   await app.listen(3333);
 }
 bootstrap();
