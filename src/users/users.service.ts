@@ -62,9 +62,9 @@ export class UserService {
 
         res.cookie('user_token', token, {
             httpOnly: true,
-            // secure: ', // Use secure cookies in production
+            secure: true,
             maxAge: 3600000, // 1 hour
-            // sameSite: ,
+            sameSite: 'lax',
             // path: '/', // Cookie available in all paths
         });
         console.log(payload)
