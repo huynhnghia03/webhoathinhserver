@@ -62,7 +62,7 @@ export class UserService {
 
         res.cookie('user_token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: false,
             maxAge: 3600000, // 1 hour
             sameSite: 'lax',
             // path: '/', // Cookie available in all paths
