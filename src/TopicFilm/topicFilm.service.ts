@@ -124,7 +124,7 @@ export class TopicService {
                 moreInteres: true
             }
         });
-        await this.cacheManager.set('hot', hotCache, 360000)
+        await this.cacheManager.set('hot', hotCache, 60000 * 60 * 24)
         return hotCache
     }
     async createTopic(topic: TopicDTO, file: string) {
@@ -145,9 +145,6 @@ export class TopicService {
         return this.topicEntity.save(topic);
     }
     async createFile(id: string, file: Express.Multer.File) {
-
-        // topic.slug = this.createSlug(topic.name)
-        // await this.ensureSlugIsUnique(topic);
         return "ok"
     }
 

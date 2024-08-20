@@ -1,9 +1,8 @@
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
-import { HttpException, HttpStatus, Inject, Injectable, ParseIntPipe } from "@nestjs/common";
+import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Cache } from "cache-manager";
 import { EpisodenDTO } from "dto/episoden.dto";
-import { TopicDTO } from "dto/topic.dto";
 import { EpisodenEntity } from "entity/episoden.entity";
 import { TopicEntity } from "entity/topic.entity";
 import slugify from "slugify";

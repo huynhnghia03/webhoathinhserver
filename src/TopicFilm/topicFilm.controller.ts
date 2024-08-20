@@ -41,9 +41,11 @@ export class TopicFilmController {
         path: '/movie'
     }))
     createTopic(@UploadedFile() file: Express.Multer.File, @Body() data: TopicDTO) {
-        console.log(file.destination + '/' + file.filename)
-        // const first, ...rest = data
-        return this.topicService.createTopic(data, file.destination + '/' + file.filename)
+        let dest = ''
+        if (file) {
+            dest = file.destination + '/' + file.filename
+        }
+        return this.topicService.createTopic(data, dest)
     }
     @UseGuards(AuthGuard)
     @Post(':id/uploadFile')
