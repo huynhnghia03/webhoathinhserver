@@ -12,9 +12,11 @@ import { CacheModule } from '@nestjs/cache-manager';
 // import { APP_INTERCEPTOR } from '@nestjs/core';
 import { UserModule } from './users/users.module';
 import { JwtService } from '@nestjs/jwt';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+// import { ThrottlerModule } from '@nestjs/throttler';
+// import { ServeStaticModule } from '@nestjs/serve-static';
+// import { join } from 'path';
+import { BackupModule } from './backup/backup.module';
+import { ScheduleModule } from '@nestjs/schedule';
 dotenv.config()
 @Module({
   imports: [CacheModule.register(
@@ -28,6 +30,7 @@ dotenv.config()
     port: parseInt(process.env.PORT) || 5432,
     username: process.env.PGUSER,
     password: process.env.PGPASSWORD,
+    ssl: process.env.PGSSL === 'true' ? { rejectUnauthorized: false } : false,
     database: process.env.PGDATABASE,
     entities: [
       TopicEntity, EpisodenEntity
