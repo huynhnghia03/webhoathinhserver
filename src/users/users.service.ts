@@ -60,18 +60,27 @@ export class UserService {
             expiresIn: '1h',
         });
 
-        res.cookie('user_token', token, {
+        // res.cookie('user_token', token, {
+        //     httpOnly: true,
+        //     secure: true,
+        //     maxAge: 3600000,
+        //     sameSite: 'lax',
+        //     path: '/',
+        // });
+        res.cookie("user_token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: true, // Ensure this is true in production
+            sameSite: 'strict', // Consider using 'Lax' if 'Strict' is causing issues
             maxAge: 3600000,
-            sameSite: 'none',
-            path: process.env.FRONTEND_URL,
         });
-        console.log(payload)
-        return res.json({
+        return res.status(200).send({
             message: "Login successful",
-            statusCode: HttpStatus.OK, // Use HttpStatus constant
-        })
+            statusCode: HttpStatus.OK,
+        });
+        // return res.json({
+        //     message: "Login successful",
+        //     statusCode: HttpStatus.OK, // Use HttpStatus constant
+        // })
     }
     logout(res: Response) {
         res.clearCookie('user_token');
