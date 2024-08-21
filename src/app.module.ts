@@ -1,22 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TopicFilmModule } from './TopicFilm/topicFilm.module';
 import { DetailFilmModule } from './DetailFilm/detailFilm.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-// import * as Joi from '@hapi/joi';
-// import { DatabaseModule } from './database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from "dotenv"
 import { TopicEntity } from 'entity/topic.entity';
 import { EpisodenEntity } from 'entity/episoden.entity';
 import { CacheModule } from '@nestjs/cache-manager';
-// import { APP_INTERCEPTOR } from '@nestjs/core';
 import { UserModule } from './users/users.module';
 import { JwtService } from '@nestjs/jwt';
-// import { ThrottlerModule } from '@nestjs/throttler';
-// import { ServeStaticModule } from '@nestjs/serve-static';
-// import { join } from 'path';
-import { BackupModule } from './backup/backup.module';
-import { ScheduleModule } from '@nestjs/schedule';
+// import { BackupModule } from './backup/backup.module';
+// import { ScheduleModule } from '@nestjs/schedule';
 dotenv.config()
 @Module({
   imports: [CacheModule.register(

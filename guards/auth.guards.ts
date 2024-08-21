@@ -1,8 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
-import { Observable } from "rxjs";
-
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(private jwt: JwtService) { }
@@ -19,7 +17,7 @@ export class AuthGuard implements CanActivate {
 
         try {
             const payload = await this.jwt.verifyAsync(token, {
-                secret: "process.env.JWT_SECRET",
+                secret: process.env.ACCESS_TOKEN_SECRET,
             });
             request['data'] = payload;
             return true;
@@ -31,8 +29,16 @@ export class AuthGuard implements CanActivate {
 
     private extractTokenFromHeader(req: Request): string | undefined {
         try {
-            console.log(req.cookies)
-            return req.cookies['user_token'];
+            const authHeader = req.headers.authorization;
+            if (typeof authHeader === 'string') {
+                const parts = authHeader.split(' ');
+                if (parts.length === 2 && parts[0] === 'Bearer') {
+                    return parts[1];
+                }
+            }
+            console.log('Authorization header is not properly formatted');
+            return undefined;
+
         } catch (e) {
             Logger.error(e);
             throw new UnauthorizedException("Token not found");

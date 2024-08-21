@@ -56,31 +56,15 @@ export class UserService {
         const payload = { email: user.email, id: user.id };
 
         const token = await this.jwt.signAsync(payload, {
-            secret: "process.env.JWT_SECRET", // Use environment variable
+            secret: process.env.ACCESS_TOKEN_SECRET, // Use environment variable
             expiresIn: '1h',
         });
 
-        // res.cookie('user_token', token, {
-        //     httpOnly: true,
-        //     secure: true,
-        //     maxAge: 3600000,
-        //     sameSite: 'lax',
-        //     path: '/',
-        // });
-        res.cookie("user_token", token, {
-            httpOnly: true,
-            secure: true, // Ensure this is true in production
-            sameSite: 'strict', // Consider using 'Lax' if 'Strict' is causing issues
-            maxAge: 3600000,
-        });
-        return res.status(200).send({
+        return res.json({
+            user_token: token,
             message: "Login successful",
             statusCode: HttpStatus.OK,
         });
-        // return res.json({
-        //     message: "Login successful",
-        //     statusCode: HttpStatus.OK, // Use HttpStatus constant
-        // })
     }
     logout(res: Response) {
         res.clearCookie('user_token');
