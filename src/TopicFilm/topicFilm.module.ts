@@ -4,11 +4,13 @@ import { TopicEntity } from "entity/topic.entity";
 import { TopicFilmController } from "./topicFilm.controller";
 import { TopicService } from "./topicFilm.service";
 import { EpisodenEntity } from "entity/episoden.entity";
-import { AuthGuard } from "guards/auth.guards";
+import { UsersEntity } from "entity/user.entity";
 import { JwtService } from "@nestjs/jwt";
+// import { AuthGuard } from "guards/auth.guards";
+// import { JwtService } from "@nestjs/jwt";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([TopicEntity, EpisodenEntity])],
+    imports: [TypeOrmModule.forFeature([TopicEntity, EpisodenEntity, UsersEntity])],
     controllers: [TopicFilmController],
     providers: [TopicService, JwtService]
 })

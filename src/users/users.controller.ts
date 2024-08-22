@@ -1,9 +1,10 @@
 
-import { Body, Controller, Post, Res, ValidationPipe, } from "@nestjs/common";
+import { Body, Controller, Post, Req, Res, UseGuards, ValidationPipe, } from "@nestjs/common";
 import { UserService } from "./users.service";
-import { Response } from "express";
+import { Request, Response } from "express";
 // import { CacheInterceptor } from "@nestjs/cache-manager";
-import { UserDtoRegister } from "dto/user.dto";
+import { UserDtoProfile, UserDtoRegister } from "dto/user.dto";
+import { AuthGuard } from "guards/auth.guards";
 
 @Controller('api/admin')
 export class UserController {
@@ -22,9 +23,10 @@ export class UserController {
         // return plainToInstance(UserDto, this.UserService.Login(userDto), { excludeExtraneousValues: true });
     }
     @Post('logout')
-    logout(@Res() res: Response) {
-
-        return this.UserService.logout(res)
+    @UseGuards(AuthGuard)
+    logout(@Req() req: Request, @Res() res: Response) {
+        console.log(req['data'].id)
+        return this.UserService.logout(req['data'].id, res)
     }
 
 

@@ -7,7 +7,7 @@ import { plainToInstance } from "class-transformer";
 import { UserDtoRegister } from "dto/user.dto";
 
 import { UsersEntity } from "entity/user.entity";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { Repository } from "typeorm";
 import { comparePassword, encodePassword } from "utils/bcrypt";
 
@@ -59,22 +59,33 @@ export class UserService {
             secret: process.env.ACCESS_TOKEN_SECRET, // Use environment variable
             expiresIn: '1h',
         });
-
+        const accesstoken = await this.storeAccessToken(token, user)
+        console.log(accesstoken)
         return res.json({
-            user_token: token,
+            user_token: accesstoken,
             message: "Login successful",
             statusCode: HttpStatus.OK,
         });
     }
-    logout(res: Response) {
-        res.clearCookie('user_token');
+
+
+
+    async logout(id: string, res: Response) {
+        console.log(id)
+        const userData = await this.userRepository.findOne({
+            where: { id: id },
+        });
+        const user = {
+            ...userData,
+            refreshToken: '',
+            expiryDate: null
+        }
+        await this.userRepository.save(user)
         return res.json({
-            message: "Logout successfull",
-            statusCode: "200"
-        })
+            message: "Logout successful",
+            statusCode: HttpStatus.OK,
+        });
     }
-
-
     // async RefreshToken(refreshToken: string) {
     //     console.log(refreshToken["token"])
     //     const encodeToken = this.jwt.verify(refreshToken["token"], {
@@ -95,7 +106,7 @@ export class UserService {
     //     const payload = { email: userData.email, id: userData.id }
     //     const accessToken = this.jwt.sign(payload, {
     //         secret: process.env.ACCESS_TOKEN_SECRET,
-    //         expiresIn: '20s',
+    //         expiresIn: '1h',
     //     })
     //     // const saveRefreshToken = await this.storeRefreshToken(uuidv4(), userData)
 
@@ -109,16 +120,16 @@ export class UserService {
     //         refreshToken
     //     }
     // }
-    // async storeRefreshToken(token: string, userData: UsersEntity) {
-    //     const expiryDate = new Date()
-    //     expiryDate.setDate(expiryDate.getDate() + 3)
-    //     const user = {
-    //         ...userData,
-    //         refreshToken: token,
-    //         expiryDate: expiryDate
-    //     }
-    //     const refreshToken = await this.userRepository.save(user)
-    //     return refreshToken.refreshToken
-    // }
+    async storeAccessToken(token: string, userData: UsersEntity) {
+        const expiryDate = new Date()
+        expiryDate.setHours(expiryDate.getHours() + 1)
+        const user = {
+            ...userData,
+            refreshToken: token,
+            expiryDate: expiryDate
+        }
+        const refreshToken = await this.userRepository.save(user)
+        return refreshToken.refreshToken
+    }
 
 }
