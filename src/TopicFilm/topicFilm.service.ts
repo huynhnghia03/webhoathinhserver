@@ -18,13 +18,41 @@ export class TopicService {
         @InjectRepository(EpisodenEntity) private readonly episodenEntity: Repository<EpisodenEntity>
     ) { }
     async getAllTopic(page: number) {
-        // const topicCaches = await this.cacheManager.get("key")
-        // if (topicCaches) {
-        //     console.log("cache")
-        //     return topicCaches
+        // // const topicCaches = await this.cacheManager.get("key")
+        // // if (topicCaches) {
+        // //     console.log("cache")
+        // //     return topicCaches
+        // // }
+        // console.log("all")
+        // const limit = 12
+        // const skip = (page - 1) * limit;
+        // const [datas, total] = await this.topicEntity.findAndCount({
+        //     order: {
+        //         updated_at: "DESC"
+        //     },
+        //     skip: skip,
+        //     take: limit,
+        // });
+        // // await this.cacheManager.set("key", datas, 10000)
+        // return {
+        //     datas,
+        //     total,
+        //     page,
+        //     limit: limit,
+        //     totalPage: Math.ceil(total / limit)
         // }
-        const limit = 12
+        const cacheKey = `topics_page_${page}`;
+        const topicCaches = await this.cacheManager.get(cacheKey);
+
+        if (topicCaches) {
+            console.log("cache");
+            return topicCaches;
+        }
+
+        console.log("all");
+        const limit = 12;
         const skip = (page - 1) * limit;
+
         const [datas, total] = await this.topicEntity.findAndCount({
             order: {
                 updated_at: "DESC"
@@ -32,14 +60,21 @@ export class TopicService {
             skip: skip,
             take: limit,
         });
-        // await this.cacheManager.set("key", datas, 10000)
-        return {
+
+        const response = {
             datas,
             total,
             page,
             limit: limit,
             totalPage: Math.ceil(total / limit)
-        }
+        };
+
+        // Cache the result for 10 seconds (10000 milliseconds)
+        await this.cacheManager.set(cacheKey, response, 60000);
+
+        return response;
+
+
     }
     async getSchedules() {
         let topicCaches = await this.cacheManager.get("key")
@@ -55,9 +90,11 @@ export class TopicService {
     }
     async getDetailTopic(slug: string) {
         let movie: TopicDTO = await this.cacheManager.get("detail")
-
+        console.log("call")
         if (movie) {
+            console.log(movie.slug != slug)
             if (movie.slug != slug) {
+                console.log("cache")
                 this.cacheManager.del("detail")
                 movie = await this.topicEntity.findOne({
                     where: {
@@ -69,6 +106,7 @@ export class TopicService {
                     throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
                 }
                 await this.cacheManager.set("detail", movie, 360000)
+                return movie
             }
             return movie
         }

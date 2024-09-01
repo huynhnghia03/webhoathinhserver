@@ -5,8 +5,14 @@ import { Cache } from "cache-manager";
 import { EpisodenDTO } from "dto/episoden.dto";
 import { EpisodenEntity } from "entity/episoden.entity";
 import { TopicEntity } from "entity/topic.entity";
+import { Request, Response } from "express";
+import { createReadStream } from "fs";
+import { join } from "path";
 import slugify from "slugify";
+import * as fs from 'fs';
+import * as crypto from 'crypto';
 import { Repository } from "typeorm";
+
 
 @Injectable()
 export class EpisodenService {
@@ -14,7 +20,9 @@ export class EpisodenService {
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
         @InjectRepository(EpisodenEntity) private readonly episodenEntity: Repository<EpisodenEntity>,
         @InjectRepository(TopicEntity) private readonly topicEntity: Repository<TopicEntity>
-    ) { }
+    ) {
+
+    }
 
     async getAllEpisodenByTopic(slug: string, episoden: string) {
         console.log(slug, episoden)
@@ -42,12 +50,17 @@ export class EpisodenService {
         // const allEpiso = await this.episodenEntity.find({ relations: ["topic_id"] })
         return topic
     }
-    async createEpisoden(id: string, episoden: EpisodenDTO) {
+    async createEpisoden(id: string, episoden: EpisodenDTO, video: string) {
         const topic = await this.topicEntity.findOne({ where: { slug: id } })
         if (!topic) throw new HttpException("Topic not found", HttpStatus.NOT_FOUND)
         const episo = this.episodenEntity.create(episoden)
         episo.slug = slugify(episo.tiltle, { lower: true, strict: true }) + '.html'
         episo.topic_id = topic
+        if (episoden.urlVideo) {
+            episo.urlVideo = episoden.urlVideo
+        } else {
+            episo.urlVideo = video
+        }
         const newEpiso = await this.episodenEntity.save(episo)
         // const allEpiso = await this.episodenEntity.find({ where: { topic_id: topic } })
         topic.newEpiso = newEpiso.episoden
@@ -99,4 +112,44 @@ export class EpisodenService {
         await this.topicEntity.save(topic);
         return { message: "Episode deleted successfully" };
     }
+    streamVideo(date: string, slug: string, req: Request, res: Response) {
+        const videoPath = join(__dirname, '..', '..', '..', 'upload', 'episoden', date, slug);
+        console.log(videoPath)
+        if (fs.existsSync(videoPath)) {
+            const stat = fs.statSync(videoPath);
+            const fileSize = stat.size;
+            const range = req.headers.range;
+
+            if (range) {
+                const parts = range.replace(/bytes=/, "").split("-");
+                const start = parseInt(parts[0], 10);
+                const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+                const chunkSize = (end - start) + 1;
+                const file = createReadStream(videoPath, { start, end });
+                const head = {
+                    'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                    'Accept-Ranges': 'bytes',
+                    'Content-Length': chunkSize,
+                    'Content-Type': 'video/mp4',
+                    'Content-Disposition': 'inline', // Prevents download prompt
+                    'Cache-Control': 'no-store', // Prevents caching by browsers
+                };
+                res.writeHead(206, head);
+                file.pipe(res);
+            } else {
+                const head = {
+                    'Content-Length': fileSize,
+                    'Content-Type': 'video/mp4',
+                    'Content-Disposition': 'inline', // Prevents download prompt
+                    'Cache-Control': 'no-store', // Prevents caching by browsers
+                };
+                res.writeHead(200, head);
+                createReadStream(videoPath).pipe(res);
+            }
+        } else {
+            res.status(HttpStatus.NOT_FOUND).send('Video not found');
+        }
+    }
+
+
 }

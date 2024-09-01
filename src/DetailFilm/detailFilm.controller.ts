@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { EpisodenDTO } from "dto/episoden.dto";
 import { EpisodenService } from "./detailFlim.service";
 import { AuthGuard } from "guards/auth.guards";
+import LocalFilesInterceptor from "utils/localFiles.interceptor";
+import { Request, Response } from "express";
 
 @Controller('api/episoden')
 export class DetailFilmController {
@@ -14,8 +16,17 @@ export class DetailFilmController {
     }
 
     @Post(':id/create')
-    createEpisoden(@Param("id") id: string, @Body() episoden: EpisodenDTO) {
-        return this.episodenService.createEpisoden(id, episoden)
+    @UseInterceptors(LocalFilesInterceptor({
+        fieldName: "file",
+        path: `/episoden/${Date.now().toString()}`
+    }))
+    createEpisoden(@Param("id") id: string, @Body() episoden: EpisodenDTO, @UploadedFile() file: Express.Multer.File) {
+        let dest = ''
+        console.log(file)
+        if (file) {
+            dest = file.destination + '/' + file.filename
+        }
+        return this.episodenService.createEpisoden(id, episoden, dest)
     }
 
     @Post(':id/update')
@@ -28,4 +39,11 @@ export class DetailFilmController {
     deleteEpisoden(@Param("id") id: string) {
         return this.episodenService.deleteEpisoden(id)
     }
+
+    @Get('stream/:date/:slug')
+    async streamVideo(@Param('date') date: string, @Param('slug') slug: string, @Req() req: Request, @Res() res: Response) {
+        console.log(slug)
+        return this.episodenService.streamVideo(date, slug, req, res)
+    }
+
 }
