@@ -70,7 +70,7 @@ export class TopicService {
         };
 
         // Cache the result for 10 seconds (10000 milliseconds)
-        await this.cacheManager.set(cacheKey, response, 60000);
+        // await this.cacheManager.set(cacheKey, response, 60000);
 
         return response;
 
@@ -85,12 +85,13 @@ export class TopicService {
         topicCaches = await this.topicEntity.find({
         });
 
-        await this.cacheManager.set("key", topicCaches, 60000 * 60 * 24)
+        // await this.cacheManager.set("key", topicCaches, 60000)
         return topicCaches
     }
     async getDetailTopic(slug: string) {
         let movie: TopicDTO = await this.cacheManager.get("detail")
-        console.log("call")
+
+
         if (movie) {
             console.log(movie.slug != slug)
             if (movie.slug != slug) {
@@ -105,7 +106,7 @@ export class TopicService {
                 if (!movie) {
                     throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
                 }
-                await this.cacheManager.set("detail", movie, 360000)
+                await this.cacheManager.set("detail", movie, 60000)
                 return movie
             }
             return movie
@@ -118,11 +119,11 @@ export class TopicService {
         if (!movie) {
             throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
         }
-        await this.cacheManager.set("detail", movie, 360000)
+        // await this.cacheManager.set("detail", movie, 360000)
         return movie
     }
     async getDetialTopicWithRelation(slug: string) {
-        let movie: TopicDTO = await this.cacheManager.get("detail")
+        let movie: TopicDTO = await this.cacheManager.get("hot")
 
         if (movie) {
             if (movie.slug != slug) {
@@ -136,7 +137,7 @@ export class TopicService {
                 if (!movie) {
                     throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
                 }
-                await this.cacheManager.set("detail", movie, 60000)
+                // await this.cacheManager.set("detail", movie, 60000)
             }
             return movie
         }
@@ -146,6 +147,7 @@ export class TopicService {
             },
             relations: ['episodens']
         })
+        console.log(movie)
         if (!movie) {
             throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
         }

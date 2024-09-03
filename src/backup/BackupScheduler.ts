@@ -5,7 +5,7 @@ import { BackUpService } from "./backup.service";
 @Injectable()
 export class BackupScheduler {
     constructor(private readonly backupService: BackUpService) { }
-    @Cron('1 1 * * * *')
+    @Cron('0 0 * * 0')
     handleCron() {
         return this.backupService.backupDatabase()
     }

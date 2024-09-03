@@ -9,10 +9,10 @@ export class TopicEntity {
     @Column({ default: "" })
     name: string;
 
-    @Column({ default: "" })
+    @Column('text')
     description: string;
 
-    @Column({ default: "" })
+    @Column('text')
     image: string;
 
     @Column({ unique: true })
@@ -39,13 +39,16 @@ export class TopicEntity {
     @Column({ default: false })
     moreInteres: boolean;
 
+    @Column({ default: false })
+    isHidden: boolean;
+
     @CreateDateColumn()
     created_at: Date;
 
     @UpdateDateColumn()
     updated_at: Date;
 
-    @DeleteDateColumn()
+    @DeleteDateColumn({ default: null })
     deleted_at: Date;
 
     @OneToMany(() => EpisodenEntity, (episo) => episo.topic_id)

@@ -7,7 +7,7 @@ export class EpisodenEntity {
     id: string;
     @Column()
     tiltle: string
-    @Column({ default: "" })
+    @Column('text')
     description: string
     @Column()
     episoden: string
@@ -15,7 +15,7 @@ export class EpisodenEntity {
     thumbImg: string
     @Column()
     slug: string;
-    @Column({ default: "" })
+    @Column('text')
     urlVideo: string
     @CreateDateColumn()
     created_at: Date;
