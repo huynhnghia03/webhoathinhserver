@@ -85,7 +85,7 @@ export class TopicService {
         topicCaches = await this.topicEntity.find({
         });
 
-        // await this.cacheManager.set("key", topicCaches, 60000)
+        await this.cacheManager.set("key", topicCaches, 60000)
         return topicCaches
     }
     async getDetailTopic(slug: string) {
@@ -164,7 +164,7 @@ export class TopicService {
                 moreInteres: true
             }
         });
-        await this.cacheManager.set('hot', hotCache, 60000 * 60 * 24)
+        // await this.cacheManager.set('hot', hotCache, 60000 * 60 * 24)
         return hotCache
     }
     async createTopic(topic: TopicDTO, file: string) {
