@@ -106,7 +106,7 @@ export class TopicService {
                 if (!movie) {
                     throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
                 }
-                await this.cacheManager.set("detail", movie, 60000)
+                await this.cacheManager.set("detail", movie, 10000)
                 return movie
             }
             return movie
@@ -164,7 +164,7 @@ export class TopicService {
                 moreInteres: true
             }
         });
-        // await this.cacheManager.set('hot', hotCache, 60000 * 60 * 24)
+        await this.cacheManager.set('hot', hotCache, 60000 * 60 * 24)
         return hotCache
     }
     async createTopic(topic: TopicDTO, file: string) {
