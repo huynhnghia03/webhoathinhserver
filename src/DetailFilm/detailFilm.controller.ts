@@ -18,7 +18,7 @@ export class DetailFilmController {
     @Post(':id/create')
     @UseInterceptors(LocalFilesInterceptor({
         fieldName: "file",
-        path: `/episoden/${Date.now().toString()}`
+        path: `/episoden`
     }))
     createEpisoden(@Param("id") id: string, @Body() episoden: EpisodenDTO, @UploadedFile() file: Express.Multer.File) {
         let dest = ''

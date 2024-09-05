@@ -80,6 +80,7 @@ function LocalFilesInterceptor(options: LocalFilesInterceptorOptions): Type<Nest
                     filename: (req, file, cb) => {
                         const timestamp = Date.now().toString();
                         const filename = `${timestamp}-${file.originalname}`;
+                        console.log(filename)
                         cb(null, filename);
                     }
                 }),
