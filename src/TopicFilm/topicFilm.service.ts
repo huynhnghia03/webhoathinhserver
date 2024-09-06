@@ -90,7 +90,6 @@ export class TopicService {
                 slug
             }
         })
-        // console.log(movie)
         if (!movie) {
             throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
         }
