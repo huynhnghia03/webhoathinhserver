@@ -16,6 +16,7 @@ export class DetailFilmController {
     }
 
     @Post(':id/create')
+    @UseGuards(AuthGuard)
     @UseInterceptors(LocalFilesInterceptor({
         fieldName: "file",
         path: `/episoden`
@@ -30,8 +31,18 @@ export class DetailFilmController {
     }
 
     @Post(':id/update')
-    updateEpisoden(@Param("id") id: string, @Body() data: EpisodenDTO) {
-        return this.episodenService.updateEpisoden(id, data)
+    @UseGuards(AuthGuard)
+    @UseInterceptors(LocalFilesInterceptor({
+        fieldName: "file",
+        path: `/episoden`
+    }))
+    updateEpisoden(@Param("id") id: string, @Body() data: EpisodenDTO, @UploadedFile() file: Express.Multer.File) {
+        let dest = ''
+        console.log(file)
+        if (file) {
+            dest = file.destination + '/' + file.filename
+        }
+        return this.episodenService.updateEpisoden(id, data, dest)
     }
 
     @Delete(':id/delete')

@@ -3,7 +3,6 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Cache } from "cache-manager";
-import { EpisodenDTO } from "dto/episoden.dto";
 import { TopicDTO } from "dto/topic.dto";
 import { EpisodenEntity } from "entity/episoden.entity";
 import { TopicEntity } from "entity/topic.entity";
@@ -18,29 +17,6 @@ export class TopicService {
         @InjectRepository(EpisodenEntity) private readonly episodenEntity: Repository<EpisodenEntity>
     ) { }
     async getAllTopic(page: number) {
-        // // const topicCaches = await this.cacheManager.get("key")
-        // // if (topicCaches) {
-        // //     console.log("cache")
-        // //     return topicCaches
-        // // }
-        // console.log("all")
-        // const limit = 12
-        // const skip = (page - 1) * limit;
-        // const [datas, total] = await this.topicEntity.findAndCount({
-        //     order: {
-        //         updated_at: "DESC"
-        //     },
-        //     skip: skip,
-        //     take: limit,
-        // });
-        // // await this.cacheManager.set("key", datas, 10000)
-        // return {
-        //     datas,
-        //     total,
-        //     page,
-        //     limit: limit,
-        //     totalPage: Math.ceil(total / limit)
-        // }
         const cacheKey = `topics_page_${page}`;
         const topicCaches = await this.cacheManager.get(cacheKey);
 
@@ -70,7 +46,7 @@ export class TopicService {
         };
 
         // Cache the result for 10 seconds (10000 milliseconds)
-        // await this.cacheManager.set(cacheKey, response, 60000);
+        await this.cacheManager.set(cacheKey, response, 3000);
 
         return response;
 
@@ -85,15 +61,13 @@ export class TopicService {
         topicCaches = await this.topicEntity.find({
         });
 
-        await this.cacheManager.set("key", topicCaches, 60000)
+        await this.cacheManager.set("key", topicCaches, 3000)
         return topicCaches
     }
     async getDetailTopic(slug: string) {
+        console.log(slug)
         let movie: TopicDTO = await this.cacheManager.get("detail")
-
-
         if (movie) {
-            console.log(movie.slug != slug)
             if (movie.slug != slug) {
                 console.log("cache")
                 this.cacheManager.del("detail")
@@ -106,7 +80,7 @@ export class TopicService {
                 if (!movie) {
                     throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
                 }
-                await this.cacheManager.set("detail", movie, 10000)
+                await this.cacheManager.set("detail", movie, 1500)
                 return movie
             }
             return movie
@@ -116,10 +90,11 @@ export class TopicService {
                 slug
             }
         })
+        // console.log(movie)
         if (!movie) {
             throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
         }
-        // await this.cacheManager.set("detail", movie, 360000)
+        await this.cacheManager.set("detail", movie, 1500)
         return movie
     }
     async getDetialTopicWithRelation(slug: string) {

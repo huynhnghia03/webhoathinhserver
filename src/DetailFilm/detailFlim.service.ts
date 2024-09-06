@@ -69,7 +69,7 @@ export class EpisodenService {
         return newEpiso
     }
 
-    async updateEpisoden(id: string, episoden: EpisodenDTO) {
+    async updateEpisoden(id: string, episoden: EpisodenDTO, dest: string) {
         const existingEpisoden = await this.episodenEntity.findOne({ where: { id }, relations: ['topic_id'] });
         if (!existingEpisoden) {
             throw new HttpException('Episode not found', HttpStatus.NOT_FOUND);
@@ -82,7 +82,12 @@ export class EpisodenService {
         existingEpisoden.description = episoden.description || existingEpisoden.description;
         existingEpisoden.episoden = episoden.episoden || existingEpisoden.episoden;
         existingEpisoden.thumbImg = episoden.thumbImg || existingEpisoden.thumbImg;
-        existingEpisoden.urlVideo = episoden.urlVideo || existingEpisoden.urlVideo;
+        if (episoden.urlVideo) {
+            existingEpisoden.urlVideo = episoden.urlVideo
+        } else {
+            existingEpisoden.urlVideo = dest
+        }
+        // existingEpisoden.urlVideo = episoden.urlVideo || existingEpisoden.urlVideo;
         await this.episodenEntity.save(existingEpisoden);
 
         if (isLatestEpisode) {

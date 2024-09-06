@@ -48,10 +48,9 @@ export class TopicFilmController {
         return this.topicService.createTopic(data, dest)
     }
     @UseGuards(AuthGuard)
-    @Post(':id/uploadFile')
     @UseInterceptors(LocalFilesInterceptor({
         fieldName: 'file',
-        path: '/movie'
+        path: '/episoden'
     }))
     createFile(@Param("id") id: string, @UploadedFile() file: Express.Multer.File) {
         console.log(file.path)
