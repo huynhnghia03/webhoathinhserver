@@ -10,7 +10,6 @@ import { createReadStream } from "fs";
 import { join } from "path";
 import slugify from "slugify";
 import * as fs from 'fs';
-import * as crypto from 'crypto';
 import { Repository } from "typeorm";
 
 
@@ -35,7 +34,7 @@ export class EpisodenService {
                     .getOne();
                 // const episodens = [...topic.map((item) => item.episodens.filter((epi) => epi.slug == slug))]
                 // console.log(topic)
-                await this.cacheManager.set("episoden", topic, 360000)
+                await this.cacheManager.set("episoden", topic, 60000)
             }
             return topic
         }
@@ -45,7 +44,7 @@ export class EpisodenService {
             .getOne();
         // const episodens = [...topic.map((item) => item.episodens.filter((epi) => epi.slug == slug))]
         // console.log(topic)
-        await this.cacheManager.set("episoden", topic, 360000)
+        await this.cacheManager.set("episoden", topic, 60000)
         // console.log(topic)
         // const allEpiso = await this.episodenEntity.find({ relations: ["topic_id"] })
         return topic
