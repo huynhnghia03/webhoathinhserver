@@ -62,7 +62,7 @@ export class EpisodenService {
         }
         const newEpiso = await this.episodenEntity.save(episo)
         // const allEpiso = await this.episodenEntity.find({ where: { topic_id: topic } })
-        topic.newEpiso = newEpiso.episoden
+        topic.newEpiso = parseInt(topic.newEpiso) > parseInt(newEpiso.episoden) ? topic.newEpiso : newEpiso.episoden
         topic.totalEpiso = '' + (parseInt(topic.totalEpiso) + 1)
         await this.topicEntity.save(topic)
         return newEpiso
