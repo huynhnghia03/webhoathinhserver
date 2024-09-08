@@ -66,7 +66,7 @@ export class TopicService {
     }
     async getDetailTopic(slug: string) {
         console.log(slug)
-        let movie: TopicDTO = await this.cacheManager.get("detail")
+        let movie: TopicDTO = await this.cacheManager.get(slug)
         // if (movie) {
         //     if (movie.slug != slug) {
         //         console.log("cache")
@@ -93,7 +93,7 @@ export class TopicService {
         if (!movie) {
             throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
         }
-        // await this.cacheManager.set("detail", movie, 1500)
+        await this.cacheManager.set(slug, movie, 60000)
         return movie
     }
     async getDetialTopicWithRelation(slug: string) {
