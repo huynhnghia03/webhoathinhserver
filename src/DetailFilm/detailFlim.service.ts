@@ -25,28 +25,15 @@ export class EpisodenService {
 
     async getAllEpisodenByTopic(slug: string, episoden: string) {
         console.log(slug, episoden)
-        let topic: TopicEntity = await this.cacheManager.get("episoden")
+        let topic: TopicEntity = await this.cacheManager.get(`${slug}-${episoden}`)
         if (topic) {
-            if (topic.episodens[0]?.slug != episoden) {
-                topic = await this.topicEntity.createQueryBuilder('topic')
-                    .leftJoinAndSelect('topic.episodens', "episoden", "episoden.slug=:episoden", { episoden })
-                    .where(`topic.slug=:slug`, { slug })
-                    .getOne();
-                // const episodens = [...topic.map((item) => item.episodens.filter((epi) => epi.slug == slug))]
-                // console.log(topic)
-                await this.cacheManager.set("episoden", topic, 60000)
-            }
             return topic
         }
         topic = await this.topicEntity.createQueryBuilder('topic')
             .leftJoinAndSelect('topic.episodens', "episoden", "episoden.slug=:episoden", { episoden })
             .where(`topic.slug=:slug`, { slug })
             .getOne();
-        // const episodens = [...topic.map((item) => item.episodens.filter((epi) => epi.slug == slug))]
-        // console.log(topic)
-        await this.cacheManager.set("episoden", topic, 60000)
-        // console.log(topic)
-        // const allEpiso = await this.episodenEntity.find({ relations: ["topic_id"] })
+        await this.cacheManager.set(`${slug}-${episoden}`, topic, 60000)
         return topic
     }
     async createEpisoden(id: string, episoden: EpisodenDTO, video: string) {
@@ -77,7 +64,7 @@ export class EpisodenService {
         const isLatestEpisode = existingEpisoden.episoden === topic.newEpiso;
         // Update the existing episode's fields
         existingEpisoden.tiltle = episoden.tiltle || existingEpisoden.tiltle;
-        existingEpisoden.slug = slugify(episoden.tiltle || existingEpisoden.tiltle, { lower: true, strict: true });
+        existingEpisoden.slug = slugify(episoden.tiltle || existingEpisoden.tiltle, { lower: true, strict: true }) + '.html';
         existingEpisoden.description = episoden.description || existingEpisoden.description;
         existingEpisoden.episoden = episoden.episoden || existingEpisoden.episoden;
         existingEpisoden.thumbImg = episoden.thumbImg || existingEpisoden.thumbImg;
