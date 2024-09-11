@@ -121,7 +121,6 @@ export class TopicService {
             },
             relations: ['episodens']
         })
-        console.log(movie)
         if (!movie) {
             throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
         }
