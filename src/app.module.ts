@@ -16,7 +16,7 @@ dotenv.config()
     {
       isGlobal: true,
     }
-  ), TopicFilmModule, DetailFilmModule, UserModule
+  ), TopicFilmModule, DetailFilmModule, UserModule,
   TypeOrmModule.forRoot({
     type: 'mysql',
     driver: require('mysql2'),
