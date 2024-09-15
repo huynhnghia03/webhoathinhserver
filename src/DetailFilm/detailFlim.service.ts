@@ -33,7 +33,7 @@ export class EpisodenService {
             .leftJoinAndSelect('topic.episodens', "episoden", "episoden.slug=:episoden", { episoden })
             .where(`topic.slug=:slug`, { slug })
             .getOne();
-        await this.cacheManager.set(`${slug}-${episoden}`, topic, 60000)
+        // await this.cacheManager.set(`${slug}-${episoden}`, topic, 60000)
         return topic
     }
     async createEpisoden(id: string, episoden: EpisodenDTO, video: string) {
