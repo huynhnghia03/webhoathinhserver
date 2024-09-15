@@ -13,6 +13,10 @@ export class TopicFilmController {
         console.log(id)
         return this.topicService.getAllTopic(id)
     }
+    @Get('AllTopics')
+    AllDataTopics() {
+        return this.topicService.AllDataTopics()
+    }
     @Get('getSchedules')
     getSchedules() {
         return this.topicService.getSchedules()

@@ -52,6 +52,19 @@ export class TopicService {
 
 
     }
+    async AllDataTopics() {
+        const datas = await this.topicEntity.find({
+            order: {
+                updated_at: "DESC"
+            }
+        });
+
+        return {
+            datas,
+        };
+
+
+    }
     async getSchedules() {
         let topicCaches = await this.cacheManager.get("key")
         if (topicCaches) {
@@ -93,7 +106,7 @@ export class TopicService {
         if (!movie) {
             throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
         }
-        await this.cacheManager.set(slug, movie, 60000)
+        // await this.cacheManager.set(slug, movie, 60000)
         return movie
     }
     async getDetialTopicWithRelation(slug: string) {
