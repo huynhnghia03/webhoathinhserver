@@ -8,8 +8,8 @@ import { EpisodenEntity } from 'entity/episoden.entity';
 import { CacheModule } from '@nestjs/cache-manager';
 import { UserModule } from './users/users.module';
 import { JwtService } from '@nestjs/jwt';
-import { BackupModule } from './backup/backup.module';
-import { ScheduleModule } from '@nestjs/schedule';
+// import { BackupModule } from './backup/backup.module';
+// import { ScheduleModule } from '@nestjs/schedule';
 dotenv.config()
 @Module({
   imports: [CacheModule.register(
