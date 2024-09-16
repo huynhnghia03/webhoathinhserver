@@ -46,7 +46,7 @@ export class TopicService {
         };
 
         // Cache the result for 10 seconds (10000 milliseconds)
-        // await this.cacheManager.set(cacheKey, response, 10000);
+        await this.cacheManager.set(cacheKey, response, 60000);
 
         return response;
 
@@ -74,12 +74,15 @@ export class TopicService {
         topicCaches = await this.topicEntity.find({
         });
 
-        // await this.cacheManager.set("key", topicCaches, 3000)
+        await this.cacheManager.set("key", topicCaches, 60000)
         return topicCaches
     }
     async getDetailTopic(slug: string) {
         console.log(slug)
         let movie: TopicDTO = await this.cacheManager.get(slug)
+        if (movie) {
+            return movie
+        }
         // if (movie) {
         //     if (movie.slug != slug) {
         //         console.log("cache")
@@ -106,29 +109,29 @@ export class TopicService {
         if (!movie) {
             throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
         }
-        // await this.cacheManager.set(slug, movie, 60000)
+        await this.cacheManager.set(slug, movie, 60000)
         return movie
     }
     async getDetialTopicWithRelation(slug: string) {
-        let movie: TopicDTO = await this.cacheManager.get("hot")
+        // let movie: TopicDTO = await this.cacheManager.get("hot")
 
-        if (movie) {
-            if (movie.slug != slug) {
-                this.cacheManager.del("detail")
-                movie = await this.topicEntity.findOne({
-                    where: {
-                        slug
-                    },
-                    relations: ['episodens']
-                })
-                if (!movie) {
-                    throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
-                }
-                // await this.cacheManager.set("detail", movie, 60000)
-            }
-            return movie
-        }
-        movie = await this.topicEntity.findOne({
+        // if (movie) {
+        //     if (movie.slug != slug) {
+        //         this.cacheManager.del("detail")
+        //         movie = await this.topicEntity.findOne({
+        //             where: {
+        //                 slug
+        //             },
+        //             relations: ['episodens']
+        //         })
+        //         if (!movie) {
+        //             throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
+        //         }
+        //         // await this.cacheManager.set("detail", movie, 60000)
+        //     }
+        //     return movie
+        // }
+        const movie = await this.topicEntity.findOne({
             where: {
                 slug
             },

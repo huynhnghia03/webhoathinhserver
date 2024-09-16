@@ -1,10 +1,10 @@
 
-import { Module } from "@nestjs/common";
-import { BackUpService } from "./backup.service";
-import { BackupScheduler } from './BackupScheduler';
+// import { Module } from "@nestjs/common";
+// import { BackUpService } from "./backup.service";
+// import { BackupScheduler } from './BackupScheduler';
 
-@Module({
-    providers: [BackUpService, BackupScheduler]
-})
+// @Module({
+//     providers: [BackUpService, BackupScheduler]
+// })
 
-export class BackupModule { }
+// export class BackupModule { }
