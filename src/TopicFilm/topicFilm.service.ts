@@ -17,6 +17,9 @@ export class TopicService {
         @InjectRepository(EpisodenEntity) private readonly episodenEntity: Repository<EpisodenEntity>
     ) { }
     async getAllTopic(page: number) {
+        if (page <= 0) {
+            return
+        }
         const cacheKey = `topics_page_${page}`;
         const topicCaches = await this.cacheManager.get(cacheKey);
 
@@ -25,7 +28,7 @@ export class TopicService {
             return topicCaches;
         }
 
-        console.log("all");
+        console.log(page);
         const limit = 12;
         const skip = (page - 1) * limit;
 
@@ -46,21 +49,31 @@ export class TopicService {
         };
 
         // Cache the result for 10 seconds (10000 milliseconds)
-        await this.cacheManager.set(cacheKey, response, 60000);
+        await this.cacheManager.set(cacheKey, response, 40000);
 
         return response;
 
 
     }
     async AllDataTopics() {
-        const datas = await this.topicEntity.find({
+        let dataAll = await this.cacheManager.get("alldata");
+
+        if (dataAll) {
+            // console.log("cache");
+            return {
+                dataAll,
+            };
+        }
+        dataAll = await this.topicEntity.find({
             order: {
                 updated_at: "DESC"
             }
         });
 
+        await this.cacheManager.set("alldata", dataAll, 60000);
+
         return {
-            datas,
+            dataAll,
         };
 
 
@@ -68,21 +81,21 @@ export class TopicService {
     async getSchedules() {
         let topicCaches = await this.cacheManager.get("key")
         if (topicCaches) {
-            console.log("cache")
+            // console.log("cache")
             return topicCaches
         }
         topicCaches = await this.topicEntity.find({
         });
 
-        await this.cacheManager.set("key", topicCaches, 60000)
+        await this.cacheManager.set("key", topicCaches, 40000)
         return topicCaches
     }
     async getDetailTopic(slug: string) {
-        console.log(slug)
-        let movie: TopicDTO = await this.cacheManager.get(slug)
-        if (movie) {
-            return movie
-        }
+        // console.log(slug)
+        // let movie: TopicDTO = await this.cacheManager.get(slug)
+        // if (movie) {
+        //     return movie
+        // }
         // if (movie) {
         //     if (movie.slug != slug) {
         //         console.log("cache")
@@ -101,7 +114,7 @@ export class TopicService {
         //     }
         //     return movie
         // }
-        movie = await this.topicEntity.findOne({
+        let movie = await this.topicEntity.findOne({
             where: {
                 slug
             }
@@ -109,7 +122,7 @@ export class TopicService {
         if (!movie) {
             throw new HttpException('Topic not found', HttpStatus.NOT_FOUND);
         }
-        await this.cacheManager.set(slug, movie, 60000)
+        // await this.cacheManager.set(slug, movie, 60000)
         return movie
     }
     async getDetialTopicWithRelation(slug: string) {
@@ -144,16 +157,16 @@ export class TopicService {
         return movie
     }
     async getHotTopics() {
-        let hotCache = await this.cacheManager.get('hot')
-        if (hotCache) {
-            return hotCache
-        }
-        hotCache = await this.topicEntity.find({
+        // let hotCache = await this.cacheManager.get('hot')
+        // if (hotCache) {
+        //     return hotCache
+        // }
+        let hotCache = await this.topicEntity.find({
             where: {
                 moreInteres: true
             }
         });
-        await this.cacheManager.set('hot', hotCache, 60000 * 60 * 24)
+        // await this.cacheManager.set('hot', hotCache, 60000 * 60 * 24)
         return hotCache
     }
     async createTopic(topic: TopicDTO, file: string) {
