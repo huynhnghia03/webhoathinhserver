@@ -24,12 +24,12 @@ export class EpisodenService {
     }
 
     async getAllEpisodenByTopic(slug: string, episoden: string) {
-        console.log(slug, episoden)
-        let topic: TopicEntity = await this.cacheManager.get(`${slug}-${episoden}`)
-        if (topic) {
-            return topic
-        }
-        topic = await this.topicEntity.createQueryBuilder('topic')
+        // console.log(slug, episoden)
+        // let topic: TopicEntity = await this.cacheManager.get(`${slug}-${episoden}`)
+        // if (topic) {
+        //     return topic
+        // }
+        const topic = await this.topicEntity.createQueryBuilder('topic')
             .leftJoinAndSelect('topic.episodens', "episoden", "episoden.slug=:episoden", { episoden })
             .where(`topic.slug=:slug`, { slug })
             .getOne();
